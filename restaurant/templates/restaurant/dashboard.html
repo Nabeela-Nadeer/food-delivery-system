@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Restaurant Dashboard{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .dashboard-header {
+      font-weight: 700;
+      color: #4a148c;
+      letter-spacing: 0.05em;
+    }
+    .card {
+      border-radius: 1rem;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0.8rem 1.5rem rgba(75, 0, 130, 0.25);
+    }
+    .card-title {
+      color: #4a148c;
+      font-weight: 600;
+    }
+    a.btn-primary {
+      border-radius: 50px;
+      padding: 0.4rem 1.5rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    a.btn-primary:hover {
+      background-color: #6a1b9a;
+    }
+    /* Customer list styling */
+    ul.customer-list {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 2rem;
+    }
+    ul.customer-list li {
+      padding: 0.5rem 0;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    ul.customer-list li:last-child {
+      border-bottom: none;
+    }
+    ul.customer-list a {
+      color: #4a148c;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    ul.customer-list a:hover {
+      text-decoration: underline;
+    }
+    /* Menu items cards */
+    .menu-card img {
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      object-fit: cover;
+    }
+    .menu-card .card-body {
+      padding: 1rem;
+      text-align: center;
+    }
+    .menu-card .card-title {
+      font-weight: 600;
+      color: #4a148c;
+    }
+    .menu-card .card-text {
+      font-weight: 700;
+      color: #6a1b9a;
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+
+  <!-- Top bar -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="dashboard-header m-0">Restaurant Dashboard</h1>
+    <a href="{% url 'home' %}" class="btn btn-danger btn-lg rounded-pill px-4">Logout</a>
+  </div>
+
+  <!-- Cards -->
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Profile</h5>
+          <p class="card-text">Update your restaurant details.</p>
+          <a href="{% url 'restaurant_profile' %}" class="btn btn-primary">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Menu</h5>
+          <p class="card-text">Manage your dishes and prices.</p>
+          <a href="{% url 'menu_management' %}" class="btn btn-primary">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Orders</h5>
+          <p class="card-text">Handle customer orders efficiently.</p>
+          <a href="{% url 'order_handling' %}" class="btn btn-primary">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Add Promo Code</h5>
+          <p class="card-text">Create discounts and special offers for your customers.</p>
+          <a href="{% url 'add_promo_code' %}" class="btn btn-primary">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Review and Ratings</h5>
+          <p class="card-text">View customer ratings and reviews</p>
+          <a href="{% url 'reviews_ratings' %}" class="btn btn-primary">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Sales Analytics</h5>
+          <p class="card-text">Check here for Sales reports.</p>
+          <a href="{% url 'sales_analytics' %}" class="btn btn-primary">Go</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <!-- Customer list -->
+  <h3 class="mt-5 mb-3">Customer Chats</h3>
+  <ul class="customer-list">
+    {% for customer in customers %}
+      <li>
+        {{ customer.user.username }}
+        <a href="{% url 'chat_view' customer.user.id %}">Chat</a>
+      </li>
+    {% empty %}
+      <li class="text-muted">No customers yet.</li>
+    {% endfor %}
+  </ul>
+  <hr>
+  <!-- Latest menu items -->
+  <h3 class="mt-4 mb-3">Your Latest Menu Items</h3>
+  <div class="row">
+    {% if recent_items %}
+      {% for item in recent_items %}
+        <div class="col-md-3 mb-3">
+          <div class="card menu-card h-100 shadow-sm">
+            {% if item.image %}
+              <img src="{{ item.image.url }}" alt="{{ item.name }}" height="150" class="card-img-top" />
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ item.name }}</h5>
+              <p class="card-text">₹{{ item.price }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted">No menu items added yet.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

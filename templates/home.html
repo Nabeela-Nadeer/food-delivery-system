@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Food Delivery{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Hero Section -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-4">Welcome to Food Delivery</h1>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{% url 'customer_login' %}" class="btn btn-primary btn-lg px-4 shadow">Customer Login</a>
+      <a href="{% url 'restaurant_login' %}" class="btn btn-success btn-lg px-4 shadow">Restaurant Login</a>
+    </div>
+    <p class="mt-3 text-muted fst-italic">
+      Or <a href="{% url 'customer_register' %}">Register as Customer</a> |
+      <a href="{% url 'restaurant_register' %}">Register as Restaurant</a>
+    </p>
+  </div>
+
+  <hr class="mb-5"/>
+
+  <!-- Popular Foods Section -->
+  <h2 class="mb-4 text-center">Popular Foods</h2>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for item in recent_items %}
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-shadow">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}" style="height: 180px; object-fit: cover;">
+        {% else %}
+          <img src="https://via.placeholder.com/300x180?text=No+Image" class="card-img-top" alt="No Image">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title fw-semibold">{{ item.name }}</h5>
+          <p class="card-text mb-2 fs-5 text-success fw-bold">₹{{ item.price }}</p>
+          <p class="card-text mt-auto text-muted"><small>From: {{ item.restaurant.name }}</small></p>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted">No menu items available.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+    transform: translateY(-4px);
+    transition: all 0.3s ease-in-out;
+  }
+</style>
+{% endblock %}

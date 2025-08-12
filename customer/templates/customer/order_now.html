@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Now</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Order Now</h2>
+
+    <!-- Menu Item Details -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">{{ menu_item.name }}</h4>
+            <p class="text-muted">Restaurant: {{ menu_item.restaurant.name }}</p>
+            <p>Price: ₹{{ menu_item.price }}</p>
+        </div>
+    </div>
+
+    <!-- Order Form -->
+    <form method="POST" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        
+        <!-- Quantity -->
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" required>
+        </div>
+
+        <!-- Promo Code -->
+        <div class="mb-3">
+            <label for="promo_code" class="form-label">Promo Code (optional)</label>
+            <input type="text" name="promo_code" id="promo_code" class="form-control" placeholder="Enter promo code">
+        </div>
+
+        <!-- Discount Message -->
+        {% if discount_amount %}
+            <div class="alert alert-success">
+                Promo applied! You saved ₹{{ discount_amount }}.
+            </div>
+        {% elif promo_error %}
+            <div class="alert alert-danger">
+                {{ promo_error }}
+            </div>
+        {% endif %}
+
+        <!-- Total Price -->
+        {% if total_price %}
+            <p class="fw-bold">Total Price: ₹{{ total_price }}</p>
+        {% endif %}
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'customer_dashboard' %}" class="btn btn-secondary">Back</a>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const quantityInput = document.getElementById('quantity');
+    const promoInput = document.getElementById('promo_code');
+    const pricePerItem = {{ menu_item.price|floatformat:2 }};
+    let discountPercent = 0;
+
+    quantityInput.addEventListener('input', updateTotal);
+
+    function updateTotal() {
+        let qty = parseInt(quantityInput.value) || 1;
+        let total = pricePerItem * qty;
+        if (discountPercent > 0) {
+            total -= total * (discountPercent / 100);
+        }
+        console.log("Updated total: ₹" + total.toFixed(2)); // Debug
+    }
+</script>
+</body>
+</html>
